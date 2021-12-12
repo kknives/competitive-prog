@@ -3,6 +3,9 @@
 auto
 bitvec_m(std::string&) -> void;
 auto
+quad_m(std::string match) -> char;
+
+auto
 main(int argc, char* argv[]) -> int
 {
   int cases;
@@ -92,7 +95,29 @@ main(int argc, char* argv[]) -> int
 }
 
 auto
-bitvec_m(std::string& moves) -> void
+quad_m(std::string match) -> char
+{
+  char play = match.front();
+  for (int i = 1; i < match.size(); i++) {
+    if (play == match[i])
+      continue;
+    switch (match[i]) {
+      case 'R':
+        play = (play == 'S') ? 'R' : 'P';
+        break;
+      case 'P':
+        play = (play == 'R') ? 'P' : 'S';
+        break;
+      case 'S':
+        play = (play == 'P') ? 'S' : 'R';
+        break;
+    }
+  }
+  return play;
+}
+
+auto
+bitvec_m(std::string moves) -> void
 {
   int player_count = moves.size();
   int loc[3] = { 0, 0, 0 }; // R P S
