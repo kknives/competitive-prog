@@ -43,7 +43,8 @@ main(int argc, char* argv[]) -> int
     // std::cout << ":S\n";
 
     std::string w_moves(player_count, '?');
-    for (int i = 0; i < moves.size() - 1; i++) {
+    w_moves[player_count - 1] = moves[player_count - 1];
+    for (int i = moves.size() - 2; i >= 0; i--) {
       char play = moves[i];
       auto r_iter = std::upper_bound(rocks.begin(), rocks.end(), i);
       auto p_iter = std::upper_bound(papers.begin(), papers.end(), i);
@@ -85,11 +86,14 @@ main(int argc, char* argv[]) -> int
             play = 'R';
             break;
         }
+        if (w_moves[j] != '?') {
+          play = w_moves[j];
+          break;
+        }
       }
       w_moves[i] = play;
     }
 
-    w_moves[player_count - 1] = moves[player_count - 1];
     std::cout << w_moves << '\n';
   }
 }
