@@ -32,15 +32,6 @@ main(int argc, char* argv[]) -> int
           break;
       }
     }
-    // for (auto x : rocks)
-    // std::cout << x << ',';
-    // std::cout << ":R\n";
-    // for (auto x : papers)
-    // std::cout << x << ',';
-    // std::cout << ":P\n";
-    // for (auto x : scisrs)
-    // std::cout << x << ',';
-    // std::cout << ":S\n";
 
     std::string w_moves(player_count, '?');
     w_moves[player_count - 1] = moves[player_count - 1];
@@ -51,9 +42,6 @@ main(int argc, char* argv[]) -> int
       auto s_iter = std::upper_bound(scisrs.begin(), scisrs.end(), i);
 
       for (int j = i; j < moves.size(); j++) {
-        // std::cout << j << std::endl;
-        // std::cout << "Iters " << *r_iter << ',' << *p_iter << ',' << *s_iter
-        // << '\n';
         switch (play) {
           case 'R':
             if (p_iter == papers.end()) {
