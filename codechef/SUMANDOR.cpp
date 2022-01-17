@@ -47,12 +47,11 @@ seq_len(uint32_t or_sum, uint32_t sum) -> long
   auto seq_l = 0;
   if (((sum % or_sum) | or_sum) == or_sum) {
     seq_l = (sum / or_sum) + ((sum % or_sum) == 0 ? 0 : 1);
-    // } else if ((or_sum % 2 != 0) && (sum % 2 == 0)) {
-    //   auto low = 2u;
-    //   auto rest = gd_seq_len(or_sum - 1, sum - low);
-    //   // std::cout << "rest,low" << rest << "," << low << "\n";
-    //   seq_l = (rest > 0) ? std::max(low, rest) : -1;
-    //   // seq_l = std::max(low, gd_seq_len(or_sum - 1, sum - low));
+  } else if ((or_sum % 2 != 0) && (sum % 2 == 0)) {
+    auto low = 2u;
+    auto rest = gd_seq_len(or_sum - 1, sum - low);
+    // std::cout << "rest,low" << rest << "," << low << "\n";
+    seq_l = (rest > 0) ? std::max(low, rest) : -1;
   } else {
     seq_l = gd_seq_len(or_sum, sum);
     seq_l = (seq_l > 0) ? seq_l : -1;
