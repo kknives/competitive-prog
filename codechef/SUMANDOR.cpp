@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 auto
-seq_len(long or_sum, long sum) -> long;
+seq_len(uint32_t or_sum, uint32_t sum) -> long;
 
 auto
 main() -> int
@@ -9,7 +9,7 @@ main() -> int
   std::cin >> cases;
 
   for (int tc = 0; tc < cases; tc++) {
-    long or_sum, sum;
+    uint32_t or_sum, sum;
     std::cin >> or_sum;
     std::cin >> sum;
 
@@ -19,48 +19,43 @@ main() -> int
 }
 
 auto
-gcd_meth(long or_sum, long sum) -> long
+gd_seq_len(uint32_t or_sum, uint32_t sum) -> uint32_t
 {
-  long terms = 1;
-  for (auto i = sum; i > 0; i >>= 1) {
-    if ((i | or_sum) == or_sum) {
-      std::cout << i << "\n";
-      terms++;
+  std::vector<uint32_t> seq{};
+  auto div = or_sum;
+  for (auto i = sum; i > 0;) {
+    auto pow = 1u << (31 - __builtin_clz(div));
+    if (pow > i)
       break;
-    }
-    if ((i & or_sum) != 0) {
-      std::cout << (i & or_sum) << "\n";
-      i -= i & or_sum;
-      terms++;
-    }
+    std::cout << pow << "\n";
+    seq.push_back(i / pow);
+    i -= pow * (i / pow);
+    div &= ~pow;
   }
-  return terms;
+  // for (auto x : seq)
+  //   std::cout << x << " ";
+  auto res = 0;
+  if (div == 0) {
+    res = *std::max_element(seq.begin(), seq.end());
+  }
+  return res;
 }
 
 auto
-seq_len(long or_sum, long sum) -> long
+seq_len(uint32_t or_sum, uint32_t sum) -> long
 {
-  long seq = 0;
-  if ((sum | or_sum) == or_sum) {
-    seq = (sum == 0 ? 0 : 1);
-  } else if (((sum % or_sum) | or_sum) == or_sum) {
-    seq = seq_len(or_sum, sum % or_sum) + (sum / or_sum);
-  } else if ((or_sum % 2) != (sum % 2)) {
-    seq = -1;
+  auto seq_l = 0;
+  if (((sum % or_sum) | or_sum) == or_sum) {
+    seq_l = (sum / or_sum) + ((sum % or_sum) == 0 ? 0 : 1);
+    // } else if ((or_sum % 2 != 0) && (sum % 2 == 0)) {
+    //   auto low = 2u;
+    //   auto rest = gd_seq_len(or_sum - 1, sum - low);
+    //   // std::cout << "rest,low" << rest << "," << low << "\n";
+    //   seq_l = (rest > 0) ? std::max(low, rest) : -1;
+    //   // seq_l = std::max(low, gd_seq_len(or_sum - 1, sum - low));
   } else {
-    seq = gcd_meth(or_sum, sum);
+    seq_l = gd_seq_len(or_sum, sum);
+    seq_l = (seq_l > 0) ? seq_l : -1;
   }
-  return seq;
+  return seq_l;
 }
-// auto rcr_seq_len(long div, resp in) -> resp {
-//   auto mismatch = in.quo^div;
-//   if (mismatch > div) {
-//     auto scale = __builtin_ctz(mismatch);
-//     in.residue += scale * (in.quo % (1 << scale));
-//     assert((in.residue | div) == div);
-//     return rcr_seq_len(div, in);
-//   }
-//   else {
-//     in.residue += div - quo;
-//   }
-// }
