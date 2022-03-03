@@ -26,16 +26,15 @@ main() -> int
   long granted = 0;
   auto slice_begin = sizes.begin();
   for (long i = 0; i < pref_count; i++) {
-    auto f = std::lower_bound(
-      slice_begin, sizes.end(), prefs[i], [tol](const long& y, long x) {
-        return std::abs(y - x) > tol;
-      });
+    auto f = std::lower_bound(slice_begin, sizes.end(), prefs[i] - tol);
 
-    std::cout << *f << "\n";
-    if (f != sizes.end()) {
+    if (f != sizes.end() && *f <= (prefs[i] + tol)) {
       granted++;
-      // slice_begin = std::next(f, 1);
+      // std::cout << "lower: " << *f_lower << "\n";
+      slice_begin = std::next(f, 1);
+      continue;
     }
+    slice_begin = f;
   }
 
   std::cout << granted << "\n";
