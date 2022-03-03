@@ -4,9 +4,7 @@ auto
 main() -> int
 {
   long pref_count, size_count, tol;
-  std::cin >> pref_count;
-  std::cin >> size_count;
-  std::cin >> tol;
+  std::cin >> pref_count >> size_count >> tol;
 
   std::vector<long> prefs{}, sizes{};
   for (int pc = 0; pc < pref_count; pc++) {
