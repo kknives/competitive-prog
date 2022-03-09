@@ -12,66 +12,35 @@ main() -> int
     std::cin >> i;
     songs.push_back(i);
   }
-  std::vector<long> track_num(playlist_len);
-  std::iota(track_num.begin(), track_num.end(), 0);
-  auto coord_sort = [&songs](const long& a, const long& b) {
-    return songs[a] < songs[b];
+  struct coord
+  {
+    long song;
+    long pos;
   };
-  std::sort(track_num.begin(), track_num.end(), coord_sort);
-  long last_ign = 0;
-  // for (auto x : track_num) {
-  //   std::cout << x << " ";
-  // }
-  // std::cout << "\n";
+  struct coord_sort
+  {
+    bool operator()(const coord& a, const coord& b) const
+    {
+      return a.song < b.song;
+    }
+  };
+  std::set<coord, coord_sort> seq{};
 
   long subseq_begin = 0, subseq_len = 0;
-  std::deque<long> seq{};
   for (auto sn = 0; sn < playlist_len; ++sn) {
-    // std::cout << "song# " << sn << ":" << subseq_begin
-    //           << " of len: " << subseq_len << "\n";
-
-    auto tn =
-      std::lower_bound(track_num.begin(), track_num.end(), sn, coord_sort);
-    if (std::next(tn) == track_num.end()) {
-      last_ign = sn;
-      continue;
-    }
-    if (songs[*std::next(tn)] != songs[sn]) {
-      last_ign = sn;
-      continue;
-    }
-    for (auto dup_tn = tn;
-         dup_tn != track_num.end() && songs[*dup_tn] == songs[sn];
-         std::advance(dup_tn, 1)) {
-      if (*dup_tn >= subseq_begin && *dup_tn < sn) {
-        auto other_dup =
-          std::lower_bound(seq.begin(), seq.end(), songs[*dup_tn]);
-        // std::cout << "found in seq: " << *other_dup << "\n";
-        seq.erase(seq.begin(), other_dup);
-        // for (auto x : seq) {
-        //   std::cout << " " << x;
-        // }
-        // std::cout << "\n";
-        // std::cout << "Seq front: " << seq.empty() << "\n";
-        subseq_len = std::max(subseq_len, sn - subseq_begin);
-        if (seq.empty()) {
-          ++subseq_begin;
+    auto dup = seq.insert(coord{ songs[sn], sn });
+    if (!dup.second) {
+      subseq_begin = dup.first->pos;
+      subseq_len = std::max(subseq_len, (long)seq.size());
+      for (auto i = seq.begin(); i != seq.end();) {
+        if (i->pos < subseq_begin) {
+          i = seq.erase(i);
         } else {
-          subseq_begin = seq.front() + 1;
-          seq.pop_front();
+          ++i;
         }
-        break;
       }
     }
-    seq.push_back(sn);
   }
-  // std::cout << "last ignored " << last_ign << "\n";
-  if (subseq_begin == 0 && seq.size() == 0) {
-    // std::cout << "Spl bdry#1 \n";
-    subseq_len = playlist_len;
-  } else if (last_ign == playlist_len - 1) {
-    // std::cout << "Spl bdry#2 \n";
-    subseq_len = std::max(subseq_len, playlist_len - subseq_begin);
-  }
+  subseq_len = std::max(subseq_len, (long)seq.size());
   std::cout << subseq_len << "\n";
 }
