@@ -33,12 +33,14 @@ main() -> int
       subseq_begin = dup.first->pos;
       subseq_len = std::max(subseq_len, (long)seq.size());
       for (auto i = seq.begin(); i != seq.end();) {
-        if (i->pos < subseq_begin) {
+        if (i->pos <= subseq_begin) {
           i = seq.erase(i);
         } else {
           ++i;
         }
       }
+      if (!seq.insert(coord{ songs[sn], sn }).second)
+        std::cout << "Something's amiss\n";
     }
   }
   subseq_len = std::max(subseq_len, (long)seq.size());
