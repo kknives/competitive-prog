@@ -5,5 +5,5 @@ cptn = 'cses.fi'
 src = ['wierd_algorithm.cpp', 'missing_number.cpp', 'repetitions.cpp', 'increasing_array.cpp', 'permutations.cpp',
 'distinct_numbers.cpp', 'apartments.cpp', 'playlist.cpp']
 foreach f : src
-  executable(f.strip('.cpp'), f, override_options : ['cpp_std=c++17']) 
+  executable(f.replace('.cpp', ''), f, override_options : ['cpp_std=c++17'])
 endforeach
