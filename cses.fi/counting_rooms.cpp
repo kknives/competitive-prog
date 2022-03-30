@@ -15,12 +15,12 @@ main() -> int
 
   auto nearest_edges = [](const auto p) {
     const auto [x, y] = p;
-    return std::array<std::tuple<int, int>, 4>{ std::make_pair(x, y + 1),
-                                                std::make_pair(x, y - 1),
-                                                std::make_pair(x - 1, y),
-                                                std::make_pair(x + 1, y) };
+    return std::array<std::pair<int, int>, 4>{ std::make_pair(x, y + 1),
+                                               std::make_pair(x, y - 1),
+                                               std::make_pair(x - 1, y),
+                                               std::make_pair(x + 1, y) };
   };
-  std::deque<std::tuple<int, int>> upcoming{ std::make_pair(0, 0) };
+  std::deque<std::pair<int, int>> upcoming{ std::make_pair(0, 0) };
   while (!upcoming.empty()) {
     auto point = upcoming.front();
     auto neighb = nearest_edges(point);
