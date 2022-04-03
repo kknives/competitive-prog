@@ -21,7 +21,8 @@ main() -> int
                                                std::make_pair(x + 1, y) };
   };
   std::deque<std::pair<int, int>> upcoming{ std::make_pair(0, 0) };
-  std::vector<std::vector<int>> state(n, std::vector<int>(m, 0));
+  int* state = static_cast<int*>(malloc(n * m * sizeof(int)));
+  *(state) = 1;
   auto oob_gen = [](int l, int b) {
     return [l, b](const auto t) {
       const auto [x, y] = t;
@@ -40,24 +41,28 @@ main() -> int
     for (auto t : neighb) {
       if (oob(t))
         continue;
-      if (!(state[t.first][t.second] & 1)) {
+      if (!(*(state + t.first * m + t.second) & 1)) {
         if (plan[t.first][t.second] == '.') {
           upcoming.push_front(t);
         } else {
           upcoming.push_back(t);
         }
-        state[t.first][t.second] |= 1;
+        *(state + t.first * m + t.second) |= 1;
       }
     }
     if (plan[point.first][point.second] == '#') {
       inside_room = false;
+      *(state + point.first * m + point.second) |= 1 << 3;
       continue;
     }
+    // There's a bug here. All blocks are processed, but the count is off
     if (!inside_room) {
       ++num_rooms;
       inside_room = true;
+      *(state + point.first * m + point.second) |= 1 << 2;
+      continue;
     }
-    state[point.first][point.second] |= 1 << 2;
+    *(state + point.first * m + point.second) = 7;
   }
 
   std::cout << num_rooms << "\n";
