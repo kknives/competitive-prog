@@ -17,10 +17,10 @@ main() -> int
   std::cin >> n;
   std::cin >> m;
 
-  std::vector<std::vector<char>> plan(n, std::vector<char>(m));
+  auto plan = static_cast<char*>(malloc(n * m * sizeof(char)));
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < m; ++j)
-      std::cin >> plan[i][j];
+      std::cin >> *(plan + i * m + j);
   }
 
   auto nearest_edges = [](const auto p) {
@@ -30,9 +30,7 @@ main() -> int
                                                std::make_pair(x - 1, y),
                                                std::make_pair(x + 1, y) };
   };
-  std::deque<std::pair<int, int>> upcoming{ std::make_pair(0, 0) };
-  int* state = static_cast<int*>(malloc(n * m * sizeof(int)));
-  *(state) = 1;
+  auto state = static_cast<int*>(malloc(n * m * sizeof(int)));
   auto oob_gen = [](int l, int b) {
     return [l, b](const auto t) {
       const auto [x, y] = t;
@@ -42,37 +40,30 @@ main() -> int
     };
   };
   auto oob = oob_gen(n, m);
-  bool inside_room = false;
   int num_rooms = 0;
-  while (!upcoming.empty()) {
-    auto point = upcoming.front();
-    upcoming.pop_front();
-    auto neighb = nearest_edges(point);
-    for (auto t : neighb) {
-      if (oob(t))
-        continue;
-      if (!(*(state + t.first * m + t.second) & 1)) {
-        if (plan[t.first][t.second] == '.') {
-          upcoming.push_front(t);
-        } else {
-          upcoming.push_back(t);
+  for (int i = 0; i < n * m; i++) {
+    if ((*(state + i) & 1))
+      continue;
+    if (*(plan + i) == '.') {
+      std::deque<std::pair<int, int>> upcoming{ std::make_pair(i / m, i % m) };
+      while (!upcoming.empty()) {
+        auto point = upcoming.front();
+        upcoming.pop_front();
+        auto neighb = nearest_edges(point);
+        for (auto t : neighb) {
+          if (oob(t))
+            continue;
+          if (!(*(state + t.first * m + t.second) & 1)) {
+            if (*(plan + t.first * m + t.second) == '.') {
+              upcoming.push_front(t);
+            }
+            *(state + t.first * m + t.second) |= 1;
+          }
         }
-        *(state + t.first * m + t.second) |= 1;
       }
-    }
-    if (plan[point.first][point.second] == '#') {
-      inside_room = false;
-      *(state + point.first * m + point.second) |= 1 << 3;
-      continue;
-    }
-    // There's a bug here. All blocks are processed, but the count is off
-    if (!inside_room) {
+      *(state + i) |= 1 << 2;
       ++num_rooms;
-      inside_room = true;
-      *(state + point.first * m + point.second) |= 1 << 2;
-      continue;
     }
-    *(state + point.first * m + point.second) = 7;
   }
 
   std::cout << num_rooms << "\n";
