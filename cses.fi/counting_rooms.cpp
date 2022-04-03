@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
 
+// Only for debugging
 auto
 print_array(int* mat, int n, int m) -> void
 {
