@@ -1,6 +1,16 @@
 #include <bits/stdc++.h>
 
 auto
+print_array(int* mat, int n, int m) -> void
+{
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < m; ++j) {
+      printf("%d ", static_cast<int>(*(mat + i * m + j)));
+    }
+    printf("\n");
+  }
+}
+auto
 main() -> int
 {
   int n, m;
