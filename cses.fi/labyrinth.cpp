@@ -5,19 +5,21 @@ struct Coord
   int i, j;
 };
 auto constexpr
-operator!=(const Coord& lhs, const Coord& rhs) -> bool
-{
-  return lhs.i != rhs.i || lhs.j != rhs.j;
-}
-auto constexpr
 operator==(const Coord& lhs, const Coord& rhs) -> bool
 {
   return lhs.i == rhs.i && lhs.j == rhs.j;
 }
 auto constexpr
+operator!=(const Coord& lhs, const Coord& rhs) -> bool
+{
+  return !(operator==(lhs, rhs));
+}
+auto constexpr
 operator<(const Coord& lhs, const Coord& rhs) -> bool
 {
-  return (lhs.i * lhs.i + lhs.j * lhs.j) < (rhs.i * rhs.i + rhs.j * rhs.j);
+  auto row = lhs.i == rhs.i;
+  auto col = lhs.j < rhs.j;
+  return row ? col : lhs.i < rhs.i;
 }
 int
 main()
