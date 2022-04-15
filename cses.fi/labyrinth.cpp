@@ -67,15 +67,19 @@ main()
       break;
   }
 
-  std::string moves{};
+  std::stack<char> moves{};
   if (state[dst[0]][dst[1]] & (1 << 2)) {
     std::cout << "YES\n";
     for (auto par = parents[dst]; par.second != Coord{ -1, -1 };
          par = parents[par.second]) {
-      moves.insert(moves.begin(), par.first);
+      moves.push(par.first);
     }
-    std::cout << moves.length() << "\n";
-    std::cout << moves << "\n";
+    std::cout << moves.size() << "\n";
+    while (!moves.empty()) {
+      std::cout << moves.top();
+      moves.pop();
+    }
+    std::cout << "\n";
   } else {
     std::cout << "NO\n";
   }
