@@ -44,6 +44,7 @@ main()
   std::map<Coord, std::pair<char, Coord>> parents{
     { bgn, std::make_pair('?', Coord{ -1, -1 }) }
   };
+  state[bgn[0]][bgn[1]] = 1;
   std::queue<Coord> upcoming{};
   upcoming.push(bgn);
   while (!upcoming.empty()) {
