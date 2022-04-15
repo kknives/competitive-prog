@@ -22,6 +22,7 @@ main()
     }
   }
 
+  std::vector<std::vector<int>> state(n, std::vector<int>(m, 0));
   auto neighbours = [](const auto o) {
     return std::array<std::pair<char, Coord>, 4>{
       std::make_pair('R', Coord{ o[0], o[1] + 1 }),
@@ -40,8 +41,8 @@ main()
   };
   auto oob = oob_gen(n, m);
 
-  std::map<Coord, std::tuple<char, Coord, int>> state{
-    { bgn, std::make_tuple('?', Coord{ -1, -1 }, 1) }
+  std::map<Coord, std::pair<char, Coord>> parents{
+    { bgn, std::make_pair('?', Coord{ -1, -1 }) }
   };
   std::queue<Coord> upcoming{};
   upcoming.push(bgn);
@@ -54,29 +55,23 @@ main()
         continue;
       if (plan[c[0]][c[1]] == '#')
         continue;
-      if (auto res = state.insert({ c, std::make_tuple(mv, point, 1) });
-          !res.second)
+      if (state[c[0]][c[1]] & 1)
         continue;
+      state[c[0]][c[1]] |= 1;
+      parents[c] = std::make_pair(mv, point);
       upcoming.push(c);
     }
-    char mv;
-    Coord par;
-    int found;
-    std::tie(mv, par, found) = state[point];
-    state[point] = std::make_tuple(mv, par, found | (1 << 2));
+    state[point[0]][point[1]] |= (1 << 2);
     if (plan[point[0]][point[1]] == 'B')
       break;
   }
 
-  char mv;
-  Coord par;
-  int found;
-  std::tie(mv, par, found) = state[dst];
   std::string moves{};
-  if (found & (1 << 2)) {
+  if (state[dst[0]][dst[1]] & (1 << 2)) {
     std::cout << "YES\n";
-    for (; par != Coord{ -1, -1 }; std::tie(mv, par, found) = state[par]) {
-      moves.insert(moves.begin(), mv);
+    for (auto par = parents[dst]; par.second != Coord{ -1, -1 };
+         par = parents[par.second]) {
+      moves.insert(moves.begin(), par.first);
     }
     std::cout << moves.length() << "\n";
     std::cout << moves << "\n";
