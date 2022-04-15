@@ -71,6 +71,8 @@ main()
       const auto [mv, c] = e;
       if (oob(c))
         continue;
+      if (plan[c.i][c.j] == '#')
+        continue;
       if (auto& [_a, _b, dis] = state[c]; dis & 1) {
         continue;
       }
@@ -79,8 +81,9 @@ main()
     }
     char mv;
     Coord par;
-    std::tie(mv, par, std::ignore) = state[point];
-    state[point] = std::make_tuple(mv, par, 2);
+    int found;
+    std::tie(mv, par, found) = state[point];
+    state[point] = std::make_tuple(mv, par, found | (1 << 2));
     if (plan[point.i][point.j] == 'B')
       break;
   }
@@ -90,10 +93,10 @@ main()
   int found;
   std::tie(mv, par, found) = state[dst];
   std::string moves{};
-  if (found == 2) {
+  if (found & (1 << 2)) {
     std::cout << "YES\n";
-    for (; par != bgn; std::tie(mv, par, found) = state[par]) {
-      moves.push_back(mv);
+    for (; par != Coord{ -1, -1 }; std::tie(mv, par, found) = state[par]) {
+      moves.insert(moves.begin(), mv);
     }
     std::cout << moves.length() << "\n";
     std::cout << moves << "\n";
