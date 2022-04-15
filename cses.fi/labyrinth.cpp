@@ -61,4 +61,41 @@ main()
   std::map<Coord, std::tuple<char, Coord, int>> state{
     { bgn, std::make_tuple('?', Coord{ -1, -1 }, 1) }
   };
+  std::deque<Coord> upcoming{ bgn };
+  while (!upcoming.empty()) {
+    auto point = upcoming.front();
+    upcoming.pop_front();
+    for (auto e : neighbours(point)) {
+      const auto [mv, c] = e;
+      if (oob(c))
+        continue;
+      if (auto& [_a, _b, dis] = state[c]; dis & 1) {
+        continue;
+      }
+      upcoming.push_back(c);
+      state[c] = std::make_tuple(mv, point, 1);
+    }
+    char mv;
+    Coord par;
+    std::tie(mv, par, std::ignore) = state[point];
+    state[point] = std::make_tuple(mv, par, 2);
+    if (plan[point.i][point.j] == 'B')
+      break;
+  }
+
+  char mv;
+  Coord par;
+  int found;
+  std::tie(mv, par, found) = state[dst];
+  std::string moves{};
+  if (found == 2) {
+    std::cout << "YES\n";
+    for (; par != bgn; std::tie(mv, par, found) = state[par]) {
+      moves.push_back(mv);
+    }
+    std::cout << moves.length() << "\n";
+    std::cout << moves << "\n";
+  } else {
+    std::cout << "NO\n";
+  }
 }
