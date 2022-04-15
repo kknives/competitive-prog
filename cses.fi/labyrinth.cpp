@@ -4,6 +4,21 @@ struct Coord
 {
   int i, j;
 };
+auto constexpr
+operator!=(const Coord& lhs, const Coord& rhs) -> bool
+{
+  return lhs.i != rhs.i || lhs.j != rhs.j;
+}
+auto constexpr
+operator==(const Coord& lhs, const Coord& rhs) -> bool
+{
+  return lhs.i == rhs.i && lhs.j == rhs.j;
+}
+auto constexpr
+operator<(const Coord& lhs, const Coord& rhs) -> bool
+{
+  return (lhs.i * lhs.i + lhs.j * lhs.j) < (rhs.i * rhs.i + rhs.j * rhs.j);
+}
 int
 main()
 {
@@ -25,5 +40,25 @@ main()
     }
   }
 
-  std::cout << "Done\n";
+  auto neighbours = [](const auto o) {
+    return std::array<std::pair<char, Coord>, 4>{
+      std::make_pair('R', Coord{ o.i, o.j + 1 }),
+      std::make_pair('L', Coord{ o.i, o.j - 1 }),
+      std::make_pair('D', Coord{ o.i + 1, o.j }),
+      std::make_pair('U', Coord{ o.i - 1, o.j })
+    };
+  };
+  auto oob_gen = [](const auto r, const auto c) {
+    return [r, c](const Coord p) {
+      const auto [x, y] = p;
+      auto lower = x >= 0 && y >= 0;
+      auto upper = x < r && y < c;
+      return (!lower) || (!upper);
+    };
+  };
+  auto oob = oob_gen(n, m);
+
+  std::map<Coord, std::tuple<char, Coord, int>> state{
+    { bgn, std::make_tuple('?', Coord{ -1, -1 }, 1) }
+  };
 }
