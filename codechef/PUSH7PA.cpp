@@ -1,5 +1,5 @@
 #include <bits/stdc++.h>
-typedef std::vector<long> Heights;
+typedef std::vector<long long> Heights;
 int
 main()
 {
@@ -12,24 +12,21 @@ main()
     for (int i = 0; i < len; i++)
       std::cin >> hts[i];
     std::sort(hts.begin(), hts.end());
-    long max_ht = 0;
-    for (int i = 0; i < len; i++) {
-      if (i - 1 >= 0 && hts[i - 1] == hts[i])
-        continue;
-      long curr_ht = 0;
-      long jumps = 0;
-      auto dup = hts[i];
-      int n = 0;
-      for (auto ub = std::upper_bound(hts.begin() + n, hts.end(), dup);
-           ub != hts.end();
-           ub = std::upper_bound(hts.begin() + n, hts.end(), dup)) {
-        n = std::distance(hts.begin() + i, ub);
-        curr_ht += n * (n + 1) / 2;
-        jumps += n - 1;
-        dup += 1;
+    long long cont_ht = 0, hi, lo = 0, val = hts[0];
+    for (hi = 0; hi < len; hi++) {
+      if (hts[hi] != hts[lo]) {
+        long long n = hi - lo, sum = val + n - 1;
+        cont_ht = std::max(cont_ht, sum);
+        lo = hi;
+        val = hts[lo];
       }
-      max_ht = std::max(max_ht, curr_ht);
     }
-    std::cout << max_ht << "\n";
+    cont_ht = std::max(cont_ht, (hi - lo));
+    {
+      long long n = hi - lo, sum = hts[lo] + n - 1;
+      cont_ht = std::max(cont_ht, sum);
+    }
+
+    std::cout << cont_ht << "\n";
   }
 }
