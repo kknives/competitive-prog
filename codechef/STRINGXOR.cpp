@@ -44,30 +44,81 @@ bt(const int len, char* init, char* fin, int w)
   }
 }
 int
-transform(const int len, char* init, char* fin)
+transform(const int len, char* init, char* fin, int w)
 {
-  if (len == 1)
-    return init[0] == fin[0];
-  if (len <= 0)
-    return 0;
-  int init_pair = (init[0] - '0') + (init[1] - '0' << 1);
-  int fin_pair = (fin[0] - '0') + (fin[1] - '0' << 1);
+  if (w > len)
+    return true;
+  if (init[w] == fin[w])
+    return transform(len, init, fin, w + 1);
 
-  switch (init_pair) {
-    case 0b00:
-      return ((fin_pair == 0b00)) && transform(len - 2, init + 2, fin + 2);
-    case 0b01:
-      return ((fin_pair == 0b00) || (fin_pair == 0b11) || (fin_pair == 0b01)) &&
-             transform(len - 2, init + 2, fin + 2);
-    case 0b10:
-      return ((fin_pair == 0b10) || (fin_pair == 0b00) || (fin_pair == 0b11)) &&
-             transform(len - 2, init + 2, fin + 2);
-    case 0b11:
-      return ((fin_pair == 0b00) || (fin_pair == 0b11)) &&
-             transform(len - 2, init + 2, fin + 2);
-    default:
-      return false;
+  int forw_res = false;
+  int back_res = false;
+  char temp_b, temp_f;
+  int chg;
+  if (w < len - 1) {
+    int init_pair = (init[w] - '0') + ((init[w + 1] - '0') << 1);
+    int fin_pair = (fin[w] - '0') + ((fin[w + 1] - '0') << 1);
+
+    temp_b = init[w];
+    temp_f = init[w + 1];
+    chg = (init[w] - '0') ^ (init[w + 1] - '0');
+    init[w] = chg + '0';
+    init[w + 1] = chg + '0';
+    switch (init_pair) {
+      case 0b00:
+        forw_res = ((fin_pair == 0b00)) && transform(len, init, fin, w);
+        break;
+      case 0b01:
+        forw_res =
+          ((fin_pair == 0b00) || (fin_pair == 0b11) || (fin_pair == 0b10)) &&
+          transform(len, init, fin, w);
+        break;
+      case 0b10:
+        forw_res =
+          ((fin_pair == 0b01) || (fin_pair == 0b00) || (fin_pair == 0b11)) &&
+          transform(len, init, fin, w);
+        break;
+      case 0b11:
+        forw_res = ((fin_pair == 0b00) || (fin_pair == 0b11)) &&
+                   transform(len, init, fin, w);
+        break;
+    }
+    init[w] = temp_b;
+    init[w + 1] = temp_f;
+    if (forw_res)
+      return forw_res;
+  } else if (w > 0) {
+    int init_pair = (init[w - 1] - '0') + ((init[w] - '0') << 1);
+    int fin_pair = (fin[w - 1] - '0') + ((fin[w] - '0') << 1);
+    temp_b = init[w - 1];
+    temp_f = init[w];
+    chg = (init[w - 1] - '0') ^ (init[w] - '0');
+    init[w] = chg + '0';
+    init[w - 1] = chg + '0';
+
+    switch (init_pair) {
+      case 0b00:
+        back_res = ((fin_pair == 0b00)) && transform(len, init, fin, w - 1);
+        break;
+      case 0b01:
+        back_res =
+          ((fin_pair == 0b00) || (fin_pair == 0b11) || (fin_pair == 0b10)) &&
+          transform(len, init, fin, w - 1);
+        break;
+      case 0b10:
+        back_res =
+          ((fin_pair == 0b01) || (fin_pair == 0b00) || (fin_pair == 0b11)) &&
+          transform(len, init, fin, w - 1);
+        break;
+      case 0b11:
+        back_res = ((fin_pair == 0b00) || (fin_pair == 0b11)) &&
+                   transform(len, init, fin, w - 1);
+        break;
+    }
+    init[w - 1] = temp_b;
+    init[w] = temp_f;
   }
+  return back_res;
 }
 int
 main()
@@ -78,7 +129,7 @@ main()
     int len;
     char *init, *fin;
     scanf("%d\n%ms\n%ms", &len, &init, &fin);
-    std::cout << results[bt(len, init, fin, 0)] << "\n";
+    std::cout << results[transform(len, init, fin, 0)] << "\n";
   }
   return 0;
 }
