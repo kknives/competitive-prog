@@ -5,3 +5,4 @@ project('competitive', 'cpp',
 
 subdir('codechef')
 subdir('cses.fi')
+subdir('codeforces')
