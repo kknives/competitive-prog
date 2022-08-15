@@ -34,3 +34,4 @@
 build/*
 build-clang/*
 .ccls-cache/*
+.cache/*
