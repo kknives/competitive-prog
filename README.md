@@ -1,4 +1,4 @@
-# Competitive Programming Solutions in C++
+# Competitive Programming Solutions
 
 These are the solutions to some of the CP problems I solved.
 
